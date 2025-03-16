@@ -17,7 +17,7 @@ if player == "X":
 game_over = False
 while game_over == False :
   if player == "X":
-    player_input = input("where do you want to place your peice.")
+    player_input = input("where do you want to place your piece.")
     if player_input .isnumeric():
       player_input = int(player_input)
       if player_input >= 1 and player_input <= 9:

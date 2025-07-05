@@ -5,7 +5,7 @@ from os import X_OK
 from typing import Text
 
 
-'''board = [["......................................................"], 
+board = [["......................................................"], 
   ["......................................................"], 
   ["......................................................"], 
   ["......................................................"], 
@@ -17,13 +17,13 @@ from typing import Text
   ["......................................................"], 
   ["......................................................"], 
   [".................................^^^^................."], 
-  ["..........^^^.............XXXXXXXXXXXXXXXXXXXXXXXXXXXX"], 
+  ["......................................................"], 
   ["XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"], 
   ["XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"], 
   ["XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"]]
 
 
-print(board[0])
+'''print(board[0])
 print(board[1])
 print(board[2])
 print(board[3])
@@ -40,6 +40,9 @@ print(board[13])
 print(board[14])
 print(board[15])'''
 
+map = []
+
+'''
 y = 0
 for list in board:
   x = 0
@@ -48,7 +51,7 @@ for list in board:
   for tile in list:
     print (tile, end = "")
     x += 1
-
+'''
 
 print("READ FILE MAP")
 
@@ -59,6 +62,8 @@ for lines in txt:
   x = 0
   y += 1
   print ("")
+  map.append([])
   for tile in lines:
-    print (tile, end = "")
+    map[-1].append(tile)
     x += 1
+print (map[0])

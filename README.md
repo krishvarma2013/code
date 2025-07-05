@@ -1,2 +1,1 @@
-# python
-Python projects
+# all coding projects

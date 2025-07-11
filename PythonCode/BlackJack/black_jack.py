@@ -48,15 +48,15 @@ def players_turn(player_cards, dealer_cards):
             print("Oh no! Your score is over 21! You BUSTED!")
             return True
 
-        your_choice = input("Do you want to 'hit' (get another card) or 'stand' (stop)? ").lower()
-        if your_choice == "hit":
+        your_choice = input("Do you want to draw or stand? ").lower()
+        if your_choice == "draw":
             new_card_you_got = give_a_card(player_cards)
             print(f"You drew a {new_card_you_got}.")
         elif your_choice == "stand":
             print("Okay, you decided to stand. Now it's the dealer's turn.")
             return False
         else:
-            print("That's not a valid choice. Please type 'hit' or 'stand'.")
+            print("That's not a valid choice. Please type draw or stand.")
 
 def dealers_turn(player_cards, dealer_cards):
     print("\n--- Dealer's Turn Now ---")
@@ -71,7 +71,7 @@ def dealers_turn(player_cards, dealer_cards):
 
     dealers_final_score = calculate_hand_total(dealer_cards)
     if dealers_final_score > 21:
-        print("The dealer's score is over 21! The dealer BUSTED!")
+        print("The dealer's score is over 21! The dealer busted!")
         return True
     else:
         print(f"The dealer stands with a score of {dealers_final_score}.")

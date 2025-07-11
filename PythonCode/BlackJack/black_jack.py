@@ -1,152 +1,180 @@
 import random
 import sys
 
-money = random.randint(0, 50000)
-print("You Have : ", money, "$")
-bet = 0
-gameover = False
-a=""
-
-amt_bet = int(input("Enter Bet amount : "))
-if amt_bet > money:
-  print(
-      "Too Big Bet! System automatically set the bet as your entire balance."
-  )
-  amt_bet = money
-bet += amt_bet
-print (amt_bet)
-  
-
 cards = ["Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2"]
-def draw(hand):
-  card = random.choice(cards)
-  print (card)
-  hand.append(card)
-  return hand
-def dra(hand):
-  card = random.choice(cards)
-  hand.append(card)
-  print ("#")
-  return hand
-playerhand = []
-dealerhand = []
-def gettotal(hand):
-  total = 0
-  for card in hand:
-    if card in ["Ace"]:
-      total += 11
-    elif card in ["King", "Queen", "Jack"]:
-      total += 10
+
+def calculate_hand_total(hand_of_cards):
+    total_score = 0
+    number_of_aces = 0
+
+    for card in hand_of_cards:
+        if card == "Ace":
+            total_score += 11
+            number_of_aces += 1
+        elif card in ["King", "Queen", "Jack"]:
+            total_score += 10
+        else:
+            total_score += int(card)
+
+    while total_score > 21 and number_of_aces > 0:
+        total_score -= 10
+        number_of_aces -= 1
+
+    return total_score
+
+def give_a_card(hand_to_add_to):
+    picked_card = random.choice(cards)
+    hand_to_add_to.append(picked_card)
+    return picked_card
+
+def show_hands(player_cards, dealer_cards, hide_dealer_card_initially=True):
+    print("\n--- What Everyone Has ---")
+    print(f"Your Cards: {', '.join(player_cards)} (Your Score: {calculate_hand_total(player_cards)})")
+    if hide_dealer_card_initially:
+        print(f"Dealer's Cards: {dealer_cards[0]}, [Hidden Card]")
     else:
-      total += int(card)
-  return total
+        print(f"Dealer's Cards: {', '.join(dealer_cards)} (Dealer's Score: {calculate_hand_total(dealer_cards)})")
+    print("-------------------------\n")
 
+def players_turn(player_cards, dealer_cards):
+    while True:
+        your_score = calculate_hand_total(player_cards)
+        show_hands(player_cards, dealer_cards, hide_dealer_card_initially=True)
 
-def betting(): 
-  global money, bet, gameover, amt_bet,a
-  
+        if your_score == 21:
+            print("Wow! You have exactly 21! Good job!")
+            return False
+        elif your_score > 21:
+            print("Oh no! Your score is over 21! You BUSTED!")
+            return True
 
-  print("your hand:")
-  draw(playerhand)
-  draw(playerhand)
-  print("total = ", gettotal(playerhand))
-  print("dealer hand:")
-  draw(dealerhand)
-  dra(dealerhand)
-  playerinput = ""
-  while True:
-    if gettotal(playerhand) == 21:
-      gameover = True
-      break
-    elif gettotal(playerhand) > 21:
-      print ("You lose")
-      a = int(input("Press 1 to end game, or Press 2 to bet more."))
+        your_choice = input("Do you want to 'hit' (get another card) or 'stand' (stop)? ").lower()
+        if your_choice == "hit":
+            new_card_you_got = give_a_card(player_cards)
+            print(f"You drew a {new_card_you_got}.")
+        elif your_choice == "stand":
+            print("Okay, you decided to stand. Now it's the dealer's turn.")
+            return False
+        else:
+            print("That's not a valid choice. Please type 'hit' or 'stand'.")
 
-      
-    playerinput = input("Do you want to draw or quit your turn? ")
-    if playerinput == "draw":
-      draw(playerhand)
-      print(playerhand)
-      print(gettotal(playerhand))
-      
-    if playerinput == "quit":
-      break
-  while True and gameover == False:
-    dealerchoice = ["quit", "draw"]
-    dealerchoice = random.choice(dealerchoice)
-    if dealerchoice == "draw":
-      print ("dealer did draw")
-      print(dealerhand)
-      draw(dealerhand)
-      print(gettotal(dealerhand))
-      if gettotal(dealerhand) > 20:
-        break
-    if dealerchoice == "quit":
-      print ("dealer didnt draw")
-      a = int(input("Press 1 to end game, or Press 2 to bet more."))
+def dealers_turn(player_cards, dealer_cards):
+    print("\n--- Dealer's Turn Now ---")
+    print("The dealer shows their hidden card!")
+    show_hands(player_cards, dealer_cards, hide_dealer_card_initially=False)
 
-  
-  
-    
-  
-  
-  print("player total:", gettotal(playerhand))
-  print("dealer total:", gettotal(dealerhand))
-  
-  
-  
-  if gettotal(playerhand) > 21:
-    print("You lost")
-    print("You now have ", money - amt_bet, "$")
-    money -= amt_bet
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
+    while calculate_hand_total(dealer_cards) < 17:
+        print("Dealer's score is less than 17, so the dealer takes another card.")
+        new_card_dealer_got = give_a_card(dealer_cards)
+        print(f"Dealer drew a {new_card_dealer_got}.")
+        show_hands(player_cards, dealer_cards, hide_dealer_card_initially=False)
 
-  elif gettotal(dealerhand) > 21:
-    print("You now have ", amt_bet * .6 + (money + amt_bet), "$")
-    money += amt_bet * .6
-    print("You won")
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
+    dealers_final_score = calculate_hand_total(dealer_cards)
+    if dealers_final_score > 21:
+        print("The dealer's score is over 21! The dealer BUSTED!")
+        return True
+    else:
+        print(f"The dealer stands with a score of {dealers_final_score}.")
+        return False
 
-  elif gettotal(playerhand) == 21:
-    print("You now have ", amt_bet * .6 + (money + amt_bet), "$")
-    money += amt_bet * .6
-    print("You won")
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
+def figure_out_the_winner(player_cards, dealer_cards, amount_you_bet, your_money_now):
+    your_final_score = calculate_hand_total(player_cards)
+    dealers_final_score = calculate_hand_total(dealer_cards)
 
-  elif gettotal(dealerhand) == 21:
-    print("You lost")
-    print("You now have ", money - amt_bet, "$")
-    money -= amt_bet
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
+    print("\n--- Game Over! Who Won? ---")
+    show_hands(player_cards, dealer_cards, hide_dealer_card_initially=False)
 
-  elif gettotal(playerhand)>gettotal(dealerhand):
-    print("You win")
-    print("You now have ", amt_bet * .6 + (money + amt_bet), "$")
-    money += amt_bet * .6
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
+    you_busted = your_final_score > 21
+    dealer_busted = dealers_final_score > 21
 
-  elif gettotal(dealerhand)>gettotal(playerhand):
-    print("You lose")
-    print("You now have ", money - amt_bet, "$")
-    money -= amt_bet
-    a = int(input("Press 1 to end game, or Press 2 to bet more."))
-  
-  if a == 1:
-    gameover = True
-    sys.exit()
-  if a == 2:
-    gameover = False
-    betting()
- 
-  
-  if gameover == True:
-    print("Bet Amount : ", bet, "$")
-    print("Earn Amount : ", money, "$")
+    if you_busted:
+        print("You went over 21, so you lose this round. The dealer wins!")
+        your_money_now -= amount_you_bet
+    elif dealer_busted:
+        print("The dealer went over 21, so the dealer loses! You WIN!")
+        your_money_now += amount_you_bet
+    elif your_final_score > dealers_final_score:
+        print("Your score is higher than the dealer's! You WIN!")
+        your_money_now += amount_you_bet
+    elif dealers_final_score > your_final_score:
+        print("The dealer's score is higher than yours. You lose this round.")
+        your_money_now -= amount_you_bet
+    else:
+        print("It's a TIE! (They call this a 'push'). You get your money back.")
 
-betting()
+    print(f"You now have: {your_money_now}$")
+    return your_money_now
 
+def play_one_round(current_money_you_have):
+    print(f"\n--- Starting a New Round! ---")
+    print(f"You currently have: {current_money_you_have}$")
 
+    if current_money_you_have <= 0:
+        print("Oh no! You don't have any money left to bet. Game over!")
+        return 0
 
+    while True:
+        try:
+            bet_amount = int(input("How much money do you want to bet this round? "))
+            if bet_amount <= 0:
+                print("You need to bet a positive amount of money.")
+            elif bet_amount > current_money_you_have:
+                print(f"Whoa! You only have {current_money_you_have}$. We'll bet all of it for you.")
+                bet_amount = current_money_you_have
+            break
+        except ValueError:
+            print("That's not a number. Please type a number for your bet.")
+
+    print(f"You bet {bet_amount}$. Good luck!")
+
+    players_hand = []
+    dealers_hand = []
+
+    print("\nDealing out the first cards...")
+    give_a_card(players_hand)
+    give_a_card(dealers_hand)
+    give_a_card(players_hand)
+    give_a_card(dealers_hand)
+
+    players_first_score = calculate_hand_total(players_hand)
+    dealers_first_score = calculate_hand_total(dealers_hand)
+
+    if players_first_score == 21 and len(players_hand) == 2:
+        print("BLACKJACK! You got 21 with your first two cards!")
+        if dealers_first_score == 21 and len(dealers_hand) == 2:
+            print("The dealer also has Blackjack! It's a TIE (a push).")
+            return current_money_you_have
+        else:
+            print("You win with Blackjack! You get extra money!")
+            return current_money_you_have + int(bet_amount * 1.5)
+
+    did_player_bust = players_turn(players_hand, dealers_hand)
+
+    if did_player_bust:
+        return figure_out_the_winner(players_hand, dealers_hand, bet_amount, current_money_you_have)
+
+    did_dealer_bust = dealers_turn(players_hand, dealers_hand)
+
+    return figure_out_the_winner(players_hand, dealers_hand, bet_amount, current_money_you_have)
+
+def main_game_loop():
+    your_total_money = random.randint(1000, 50000)
+    print(f"Welcome to the Simple Blackjack Game! You start with: {your_total_money}$")
+
+    while True:
+        your_total_money = play_one_round(your_total_money)
+        
+        if your_total_money <= 0:
+            print("You've run out of money! Thanks for playing!")
+            break
+
+        play_again_choice = input("Do you want to play another round? (type 'yes' or 'no'): ").lower()
+        if play_again_choice != "yes":
+            print(f"Thanks for playing! You are leaving with {your_total_money}$.")
+            break
+
+if __name__ == "__main__":
+    main_game_loop()
 
 
 

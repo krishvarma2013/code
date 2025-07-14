@@ -1,71 +1,101 @@
 import random
 
-def printboard():
-  print (board[0])
-  print (board[1])
-  print (board[2])
-  print (board[3])
-  print (board[4])
-  print (board[5])
-piece = random.choice(["X", "O"])
-gameover = False
-board = [[" " for x in range(7)] for y in range(8)] 
-printboard() 
-while gameover is False:
-  if piece == "O":
-    player_input = input("Which coulumn do you want to place it in? ")
-    player_input = int(player_input)
-    print(player_input)
-    for i in range(5, -1, -1):
-      if board[i][player_input] == " ":
-        board[i][player_input] = piece
+NUM_ROWS = 6
+NUM_COLS = 7
+EMPTY_SLOT = " "
+CONNECT_FOUR = 4
 
-        break
+def print_game_board():
+    print("  " + " ".join(str(i) for i in range(NUM_COLS)))
+    for r in range(NUM_ROWS):
+        print(f"{r} |" + "|".join(game_board[r][c] for c in range(NUM_COLS)) + "|")
+    print("  " + "-" * (NUM_COLS * 2 + 1))
+
+def check_for_win(board_state, current_piece):
+    for r_check in range(NUM_ROWS):
+        for c_check in range(NUM_COLS - CONNECT_FOUR + 1):
+            if all(board_state[r_check][c_check + i] == current_piece for i in range(CONNECT_FOUR)):
+                return True
+
+    for c_check in range(NUM_COLS):
+        for r_check in range(NUM_ROWS - CONNECT_FOUR + 1):
+            if all(board_state[r_check + i][c_check] == current_piece for i in range(CONNECT_FOUR)):
+                return True
+
+    for r_check in range(NUM_ROWS - CONNECT_FOUR + 1):
+        for c_check in range(NUM_COLS - CONNECT_FOUR + 1):
+            if all(board_state[r_check + i][c_check + i] == current_piece for i in range(CONNECT_FOUR)):
+                return True
+
+    for r_check in range(NUM_ROWS - CONNECT_FOUR + 1):
+        for c_check in range(CONNECT_FOUR - 1, NUM_COLS):
+            if all(board_state[r_check + i][c_check - i] == current_piece for i in range(CONNECT_FOUR)):
+                return True
+
+    return False
+
+current_player_piece = random.choice(["X", "O"])
+game_is_over = False
+game_board = [[EMPTY_SLOT for _ in range(NUM_COLS)] for _ in range(NUM_ROWS)]
+
+print_game_board()
+
+while not game_is_over:
+    selected_column = -1
+
+    if current_player_piece == "O":
+        while True:
+            try:
+                column_input_str = input(f"Player {current_player_piece}, enter column (0-{NUM_COLS-1}) to drop your piece: ")
+                player_chosen_column = int(column_input_str)
+
+                if 0 <= player_chosen_column < NUM_COLS:
+                    if game_board[0][player_chosen_column] == EMPTY_SLOT:
+                        for row_to_drop in range(NUM_ROWS - 1, -1, -1):
+                            if game_board[row_to_drop][player_chosen_column] == EMPTY_SLOT:
+                                game_board[row_to_drop][player_chosen_column] = current_player_piece
+                                selected_column = player_chosen_column
+                                break
+                        break
+                    else:
+                        print("That column is full. Please choose a different one.")
+                else:
+                    print(f"Invalid column number. Please enter a number between 0 and {NUM_COLS-1}.")
+            except ValueError:
+                print("Invalid input. Please enter a whole number.")
+
+    elif current_player_piece == "X":
+        print(f"Player {current_player_piece} (AI) is making a move...")
+        while True:
+            ai_chosen_column = random.randint(0, NUM_COLS - 1)
+            
+            if game_board[0][ai_chosen_column] == EMPTY_SLOT:
+                for row_to_drop in range(NUM_ROWS - 1, -1, -1):
+                    if game_board[row_to_drop][ai_chosen_column] == EMPTY_SLOT:
+                        game_board[row_to_drop][ai_chosen_column] = current_player_piece
+                        selected_column = ai_chosen_column
+                        print(f"AI dropped piece in column {ai_chosen_column}.")
+                        break
+                break
+
+    print_game_board()
+
+    if check_for_win(game_board, current_player_piece):
+        print(f"Player {current_player_piece} wins! 🎉 Congratulations!")
+        game_is_over = True
+    else:
+        board_is_full = True
+        for col_index in range(NUM_COLS):
+            if game_board[0][col_index] == EMPTY_SLOT:
+                board_is_full = False
+                break
+        
+        if board_is_full:
+            print("The board is full! It's a draw. 🤝")
+            game_is_over = True
     
-      
-  elif piece == "X":
-    piece_placed = False
-    while piece_placed == False:
-      piece_placed = False
-      col = random.randint(0,6)
-      for i in range(5, -1, -1):
-            print(board[i][col])
-            if board[i][col] == " ":
-              board[i][col] = piece
-              piece_placed = True
-              break
-
-      
-  for i in range(0, 7):
-    for j in range(5, 2, -1):
-      if board[j][i] == piece and board[j+-1][i] == piece and board[j+-2][i] == piece and board[j+-3][i] == piece:
-        print("Player", piece, "won")
-        gameover = True
-
-  for row in range(6):
-    for column in range(0, 4):
-      if board[row][column] == piece and board[row][column+1] == piece and board[row][column+2] == piece and board[row][column+3] == piece:
-        print("Player", piece, "won")
-        gameover = True
-
-
-  positions = [[3, 0], [4, 0], [5,0], [3, 1], [4, 1], [5,1], [3, 2], [4, 2], [5,2], [3, 3], [4, 3], [5,3]]
-
-
-  for pos in positions:
-        if board[pos[0]][pos[1]] == piece and board[pos[0]-1][pos[1]+1] == piece and board[pos[0]-2][pos[1]+2] == piece and board[pos[0]-3][pos[1]+3] == piece:
-          print("Player", piece, "won")
-          gameover = True
-
-  positions = [[5, 6], [4, 6], [3, 6], [5, 5], [4, 5], [3,5], [5, 4], [4, 4], [3,4], [5, 3], [4, 3], [3,3]]
-
-
-  for pos in positions:
-        if board[pos[0]][pos[1]] == piece and board[pos[0]-1][pos[1]-1] == piece and board[pos[0]-2][pos[1]-2] == piece and board[pos[0]-3][pos[1]-3] == piece:
-          print("Player", piece, "won")
-          gameover = True
-  if piece == "O":
-    piece = "X"
-  else: 
-    piece = "O"
-  printboard()
+    if not game_is_over:
+        if current_player_piece == "O":
+            current_player_piece = "X"
+        else:
+            current_player_piece = "O"

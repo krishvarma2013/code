@@ -65,7 +65,7 @@ while not game_is_over:
                 print("Invalid input. Please enter a whole number.")
 
     elif current_player_piece == "X":
-        print(f"Player {current_player_piece} (AI) is making a move...")
+        print(f"Player {current_player_piece} The bot is making a move...")
         while True:
             ai_chosen_column = random.randint(0, NUM_COLS - 1)
             
@@ -74,7 +74,7 @@ while not game_is_over:
                     if game_board[row_to_drop][ai_chosen_column] == EMPTY_SLOT:
                         game_board[row_to_drop][ai_chosen_column] = current_player_piece
                         selected_column = ai_chosen_column
-                        print(f"AI dropped piece in column {ai_chosen_column}.")
+                        print(f"The bot dropped piece in column {ai_chosen_column}.")
                         break
                 break
 

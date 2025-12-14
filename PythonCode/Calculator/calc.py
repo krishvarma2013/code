@@ -28,8 +28,8 @@ def division():
 
 def modular():
     count = 0
-    i = int(input("First Number"))
-    j = int(input("Second Number"))
+    i = int(input("First Number "))
+    j = int(input("Second Number "))
     count = i % j
     print (count)
 

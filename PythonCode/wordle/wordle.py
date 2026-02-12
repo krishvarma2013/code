@@ -8,7 +8,7 @@ WORD_LENGTH = 5
 
 GREEN = "G"
 YELLOW = "Y"
-GRAY = "⬛"
+GRAY = "GR"
 
 
 def check_guess(secret_word, guess):
